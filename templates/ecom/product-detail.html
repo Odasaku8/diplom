@@ -1,0 +1,30 @@
+{% extends 'ecom/customer_base.html' %}
+{% load static %}
+
+{% block content %}
+
+                    <a class="btn btn-danger" href="javascript:history.back()">Back</a>
+
+<div class="container">
+
+  <div class="card mb-3">
+    <div class="row g-0">
+      <div class="col-md-4">
+        <img src="{% static product.product_image.url %}" alt="Product Image" class="img-fluid" style="max-height: 200px;">
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <h1 class="card-title">{{ product.name }}</h1>
+          <p class="card-text"><strong>Description:</strong> {{ product.description }}</p>
+          <p class="card-text"><strong>Price:</strong> {{ product.price }} Тенге</p>
+          <p class="card-text"><strong>Size:</strong> {{ product.size }}</p>
+          <p class="card-text"><strong>Country of Origin:</strong> {{ product.country_of_origin }}</p>
+          <p class="card-text"><strong>Material:</strong> {{ product.material }}</p>
+        </div>
+      </div>
+    </div>
+<h3>View Count: {{ product.view_at }} 9</h3>
+
+  </div>
+</div>
+{% endblock %}

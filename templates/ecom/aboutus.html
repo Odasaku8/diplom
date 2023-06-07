@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Happy Kids</title>
+  <style media="screen">
+    .footer{
+      position: fixed;
+    }
+  </style>
+</head>
+
+<body style="background-color:#f7f7f7;">
+  {%if request.user.is_authenticated%}
+    {% include "ecom/customer_navbar.html" %}
+  {%else%}
+    {% include "ecom/navbar.html" %}
+  {%endif%}
+  <br><br><br>
+<h3 style="text-align:center;">"Наша компания занимается продажей детской одежды. Она является очень качественным, удобным и полезным продуктом. Нам доверяют тысячи счастливых родителей. Детство важно, а значит одежда должна говорить за вас, как вы цените и любите своих детей." </h3>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+  {% include "ecom/footer.html" %}
+</body>
+
+
+</html>
