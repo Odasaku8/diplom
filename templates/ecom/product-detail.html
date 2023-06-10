@@ -2,8 +2,31 @@
 {% load static %}
 
 {% block content %}
+<style>
+  .rating-stars {
+    display: inline-block;
+    font-size: 24px;
+  }
 
-                    <a class="btn btn-danger" href="javascript:history.back()">Back</a>
+  .rating-stars input[type="radio"] {
+    display: none;
+  }
+
+  .rating-stars label {
+    color: #bbb;
+    cursor: pointer;
+  }
+
+  .rating-stars label:before {
+    content: "\2606";
+  }
+
+  .rating-stars input[type="radio"]:checked ~ label:before {
+    content: "\2605";
+    color: #ffca08;
+  }
+</style>
+<a class="btn btn-danger" href="{% url 'customer-home'%}">Back</a>
 
 <div class="container">
 
@@ -23,8 +46,52 @@
         </div>
       </div>
     </div>
-<h3>View Count: {{ product.view_at }} 9</h3>
+    <h2>Average Rating: {{ average_rating|default:"Пока оценки нет" }}</h2>
+
+<p>Views: {{ product.views }}</p>
 
   </div>
+  <form method="post" action="{% url 'product-detail' pk=product.pk %}">
+  {% csrf_token %}
+  <div class="rating-stars">
+    <input type="radio" id="star5" name="rating" value="5">
+    <label for="star5"></label>
+    <input type="radio" id="star4" name="rating" value="4">
+    <label for="star4"></label>
+    <input type="radio" id="star3" name="rating" value="3">
+    <label for="star3"></label>
+    <input type="radio" id="star2" name="rating" value="2">
+    <label for="star2"></label>
+    <input type="radio" id="star1" name="rating" value="1">
+    <label for="star1"></label>
+  </div>
+  <br>
+  <label for="comment">Comment:</label>
+  <textarea name="comment" id="comment"></textarea>
+  <br>
+  <button type="submit">Submit</button>
+</form>
+
+  <h2>Comments:</h2>
+{% for rating in product.rating_set.all %}
+  <p>Rating: {{ rating.rating }}</p>
+  <p>Comment: {{ rating.comment }}</p>
+  <p>Customer: {{ rating.customer }}</p>
+  <hr>
+{% empty %}
+  <p>No comments yet.</p>
+{% endfor %}
 </div>
+<script>
+  // Handle user interaction with the star rating system
+  const ratingStars = document.getElementsByClassName('rating-stars')[0];
+  const stars = ratingStars.getElementsByTagName('input');
+
+  for (let i = 0; i < stars.length; i++) {
+    stars[i].addEventListener('click', () => {
+      const ratingValue = stars[i].value;
+      console.log('Selected rating:', ratingValue);
+    });
+  }
+</script>
 {% endblock %}

@@ -453,6 +453,10 @@ img {
 </div>
 
                                 <a href="{% url 'product-detail' p.id %}">
+                                        <div class="reviews-count">
+        Отзывов: {{ p.reviews_count }}
+    </div>
+
                 <img class="img" src="{% static p.product_image.url %}" alt="product pic" height="300px" width="300px">
                 <div class="img-info">
                   <div class="info-inner">

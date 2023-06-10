@@ -1,3 +1,4 @@
+from django.db.models import Count, Avg
 from django.shortcuts import render,redirect,reverse
 from . import forms,models
 from django.http import HttpResponseRedirect,HttpResponse
@@ -334,13 +335,14 @@ def send_feedback_view(request):
 @user_passes_test(is_customer)
 def customer_home_view(request):
     categories = Category.objects.all()  # Получаем все категории товаров
-    products=models.Product.objects.all()
+    products = models.Product.objects.annotate(reviews_count=Count('rating')).all()
     if 'product_ids' in request.COOKIES:
         product_ids = request.COOKIES['product_ids']
         counter=product_ids.split('|')
         product_count_in_cart=len(set(counter))
     else:
         product_count_in_cart=0
+
     return render(request,'ecom/customer_home.html',{'categories': categories, 'products':products,'product_count_in_cart':product_count_in_cart})
 
 
@@ -476,7 +478,9 @@ from xhtml2pdf import pisa
 from django.template.loader import get_template
 from django.template import Context
 from django.http import HttpResponse
-
+from django.template.loader import get_template
+import io
+from xhtml2pdf import pisa
 
 def render_to_pdf(template_src, context_dict):
     template = get_template(template_src)
@@ -562,13 +566,29 @@ def contactus_view(request):
 
 
 from django.shortcuts import render, get_object_or_404
-from .models import Product
 
-from .models import Product, ProductView
+from .models import Product, ProductView, Rating
+from decimal import Decimal, ROUND_DOWN
 
+@login_required
 def product_detail_view(request, pk):
     product = get_object_or_404(Product, pk=pk)
-    return render(request, 'ecom/product-detail.html', {'product': product})
+
+    if request.method == 'POST':
+        rating = int(request.POST['rating'])
+        comment = request.POST['comment']
+        customer = request.user.customer
+
+        Rating.objects.create(product=product, customer=customer, rating=rating, comment=comment)
+        # You can perform any additional logic or validation here if needed
+
+    product.increment_views()  # Increment views when the product is viewed
+    average_rating = product.rating_set.aggregate(Avg('rating'))['rating__avg']
+    average_rating = Decimal(average_rating).quantize(Decimal('0.0'), rounding=ROUND_DOWN) if average_rating is not None else None
+
+
+    return render(request, 'ecom/product-detail.html', {'product': product, 'average_rating': average_rating})
+
 
 
 from sklearn.feature_extraction.text import TfidfVectorizer
